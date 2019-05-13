@@ -27,7 +27,7 @@
 
     // Visual bell style.
     // Valid values are: blink, view, or views.
-    "vintageous_bell": "blink",
+    "vintageous_bell": "view",
 
     // Visual bell color-scheme.
     // Valid values are: "dark", "light".

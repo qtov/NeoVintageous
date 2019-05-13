@@ -709,7 +709,7 @@ List of available settings:
         squiggly_underline, stippled_underline.
 
                                                            *'vintageous_bell'*
-'vintageous_bell'       string (default "blink")
+'vintageous_bell'       string (default "view")
         Visual bell style type. Valid values are: blink, view, or views.
 
                                               *'vintageous_bell_color_scheme'*
