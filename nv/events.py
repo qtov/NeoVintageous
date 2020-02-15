@@ -19,6 +19,7 @@ from sublime import OP_EQUAL
 from sublime import OP_NOT_EQUAL
 from sublime_plugin import EventListener
 
+from NeoVintageous.nv.autocmds import do_autocmds
 from NeoVintageous.nv.modeline import do_modeline
 from NeoVintageous.nv.options import get_option
 from NeoVintageous.nv.session import session_on_close
@@ -203,8 +204,9 @@ class NeoVintageousEvents(EventListener):
                         update_xpos(view)
 
     def on_load(self, view):
-        if is_view(view) and get_option(view, 'modeline'):
-            do_modeline(view)
+        if is_view(view):
+            if get_option(view, 'modeline'):
+                do_modeline(view)
 
     def on_post_save(self, view):
         if is_view(view):
@@ -233,6 +235,8 @@ class NeoVintageousEvents(EventListener):
                             sel = other_view.sel()
                             if len(sel) > 0 and any([not s.empty() for s in sel]):
                                 enter_normal_mode(other_view, get_mode(other_view))
+
+            do_autocmds(view)
 
         # Initialise view.
         init_state(view)

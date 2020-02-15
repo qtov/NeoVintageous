@@ -428,3 +428,32 @@ foobar
 
     :let mapleader=,
 " ^^^^^^^^^^^^^^^^^ invalid
+
+autocmd foobar
+" ^ invalid
+"       ^ invalid
+
+autocmd FooBar x y
+" ^ invalid
+"       ^ invalid
+"              ^ invalid
+"                ^ invalid
+
+autocmd FileType go nnoremap <leader>gd :LspSymbolDefinition<CR>
+" ^ keyword.control
+"       ^ variable.parameter
+"                            ^^^^^^^^ storage.type
+"                                                           ^^^^ storage.type
+
+autocmd FileType go set winaltkeys=menu
+" ^ keyword.control
+"       ^ variable.parameter
+"                   ^ keyword
+"                       ^ entity
+
+autocmd FileType go let mapleader=,
+" ^ keyword.control
+"       ^ variable.parameter
+"                   ^ keyword.control
+"                       ^ variable.language
+"                                 ^ keyword.operator.assignment

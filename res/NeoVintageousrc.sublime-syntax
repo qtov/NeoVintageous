@@ -10,32 +10,18 @@ hidden: true
 contexts:
   main:
 
-    # Comments
-    - match: "^\\s*\".*"
-      scope: comment.line.neovintageourc
+    - include: comments
+    - include: commands
 
-    # Mapping commands.
-    - match: ^:?((n|o|s|v)?noremap)\b
-      scope: keyword.control.neovintageourc
-
-    # Recursive mappings were replaced with non-recursive mappings because they
-    # were not implemented properly and can cause infinite loop problems.
-    # https://github.com/NeoVintageous/NeoVintageous/blob/master/CHANGELOG.md#removed-3
-    - match: ^:?\b(n|o|s|v)?map.*
-      scope: invalid.neovintageourc
-
-    # Mapleader.
-    - match: ^:?(let) (map(?:local)?leader)(=).*
+    # Autocmd.
+    - match: ^:?(autocmd)\s+((?i)FileType)\s+([a-z]+)\s+
       captures:
         1: keyword.control.neovintageourc
-        2: variable.language.neovintageourc
-        3: keyword.operator.assignment.neovintageourc
-
-    # Set.
-    - match: ^:?(set) ([a-z]+)(=)?(.+)?$
-      captures:
-        1: keyword.control.neovintageourc
-        2: entity.name.neovintageourc
+        2: variable.parameter.neovintageourc
+      push:
+        - include: commands
+        - match: ''
+          pop: true
 
     # Keys <{named}>
     - match: (?i)\<(bs|bar|bslash|cr|csi|del|down|eol|end|enter|esc|ff|help|home|insert|leader|left|nl|nul|pagedown|pageup|return|right|space|tab|undo|up|lt|xcsi)>
@@ -83,3 +69,37 @@ contexts:
     # Anything left is invalid.
     - match: ^.*$
       scope: invalid.neovintageourc
+
+  comments:
+    - match: "^\\s*\".*"
+      scope: comment.line.neovintageourc
+
+  mapping-commands:
+    # Mapping commands.
+    - match: :?((n|o|s|v)?noremap)\b
+      scope: keyword.control.neovintageourc
+
+    # Recursive mappings were replaced with non-recursive mappings because they
+    # were not implemented properly and can cause infinite loop problems.
+    # https://github.com/NeoVintageous/NeoVintageous/blob/master/CHANGELOG.md#removed-3
+    - match: ^:?\b(n|o|s|v)?map.*
+      scope: invalid.neovintageourc
+
+  set-command:
+    - match: :?(set) ([a-z]+)(=)?(.+)?$
+      captures:
+        1: keyword.control.neovintageourc
+        2: entity.name.neovintageourc
+
+  let-command:
+    # Mapleader.
+    - match: :?(let) (map(?:local)?leader)(=).*
+      captures:
+        1: keyword.control.neovintageourc
+        2: variable.language.neovintageourc
+        3: keyword.operator.assignment.neovintageourc
+
+  commands:
+    - include: mapping-commands
+    - include: set-command
+    - include: let-command

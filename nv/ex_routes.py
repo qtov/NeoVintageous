@@ -56,6 +56,17 @@ def _resolve(state, command: TokenCommand, pattern: str) -> TokenCommand:
     return command
 
 
+def _ex_route_autocmd(state) -> TokenCommand:
+    command = TokenCommand('autocmd')
+    command.params.update(state.expect_match(
+        '\\s*(?P<event>[A-Z][a-zA-Z]*)'
+        '\\s+(?P<pat>[a-zA-Z.]+)'
+        '\\s+(?P<cmd>.+)'
+    ).groupdict())
+
+    return command
+
+
 def _ex_route_bfirst(state) -> TokenCommand:
     return _create_route(state, 'bfirst')
 
@@ -711,6 +722,7 @@ ex_routes = OrderedDict()  # type: dict
 ex_routes[r'!(?=.+)'] = _ex_route_shell_out
 ex_routes[r'&&?'] = _ex_route_double_ampersand
 ex_routes[r'(?:files|ls|buffers)!?'] = _ex_route_buffers
+ex_routes[r'au(?:tocmd)?'] = _ex_route_autocmd
 ex_routes[r'bf(?:irst)?'] = _ex_route_bfirst
 ex_routes[r'bl(?:ast)?'] = _ex_route_blast
 ex_routes[r'bn(?:ext)?'] = _ex_route_bnext

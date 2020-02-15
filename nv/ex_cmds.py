@@ -37,6 +37,7 @@ from sublime import yes_no_cancel_dialog
 
 from NeoVintageous.nv import shell
 from NeoVintageous.nv import variables
+from NeoVintageous.nv.autocmds import add_autocmd
 from NeoVintageous.nv.cmdline import CmdlineOutput
 from NeoVintageous.nv.ex.nodes import RangeNode
 from NeoVintageous.nv.ex.parser import parse_command_line
@@ -120,6 +121,11 @@ def _init_cwd(f, *args, **kwargs):
                 os.chdir(original_cwd)
 
     return inner
+
+
+def ex_autocmd(event: str, pat: str, cmd: str, **kwargs) -> None:
+    print("ex_autocmd()", event, pat, cmd, kwargs)
+    add_autocmd(event, pat, cmd, **kwargs)
 
 
 def ex_bfirst(window, **kwargs) -> None:
