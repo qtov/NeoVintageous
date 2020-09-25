@@ -1210,6 +1210,22 @@ class nv_vi_a(TextCommand):
         })
 
 
+def _should_motion_apply_change_op_transformer(motion):
+    apply_transformer = True
+
+    if motion and 'motion' in motion:
+        if motion['motion'] == 'nv_vi_select_text_object':
+            if motion['motion_args']['inclusive']:
+                if motion['motion_args']['text_object'] == 'w':
+                    if motion['motion_args']['count'] == 1:
+                        apply_transformer = False
+
+    if apply_transformer and should_motion_apply_op_transformer(motion):
+        return True
+
+    return False
+
+
 class nv_vi_c(TextCommand):
 
     def run(self, edit, mode=None, count=1, motion=None, register=None):
@@ -1224,7 +1240,7 @@ class nv_vi_c(TextCommand):
                 run_motion(self.view, motion)
 
                 if mode == INTERNAL_NORMAL:
-                    if should_motion_apply_op_transformer(motion):
+                    if _should_motion_apply_change_op_transformer(motion):
                         def f(view, s):
                             if view.substr(s).strip():
                                 if s.b > s.a:

@@ -364,12 +364,44 @@ def _get_text_object_quote(view, s: Region, inclusive: bool, count: int, delims:
     return Region(prev_quote.a + 1, next_quote.b - 1)
 
 
+DEBUG = False
+
+
 def _get_text_object_word(view, s: Region, inclusive: bool, count: int) -> Region:
-    w = _a_word(view, s.b, inclusive=inclusive, count=count)
+    if DEBUG: print("\n=======================================================================")  # noqa
+    if DEBUG: print("\nget text object word:\n", 's =', s, 'inclusive =', inclusive)  # noqa
+    if DEBUG: print('SIZE > 0 =', s.size())  # noqa
+
+    if s.size() == 1:
+        if s.b > s.a:
+            start_pt = s.b - 1
+        else:
+            start_pt = s.b
+    elif s.size() > 1:
+        if s.b > s.a:
+            start_pt = s.b
+        else:
+            start_pt = max(s.b - 1, 0)
+    else:
+        start_pt = s.b
+
+    if DEBUG: print('start_pt =', start_pt)  # noqa
+    w = _a_word(view, start_pt, inclusive=inclusive, count=count)
+    if DEBUG: print('w =', w)  # noqa
+
     if s.size() <= 1:
         return w
 
-    return Region(s.a, w.b)
+    if s.b > s.a:
+        if DEBUG: print('resolve 1')  # noqa
+        a, b = s.a, w.b
+    else:
+        if DEBUG: print('resolve 2')  # noqa
+        a, b = s.a, w.a
+
+    r = Region(a, b)
+    if DEBUG: print('r =', r)  # noqa
+    return r
 
 
 def _get_text_object_big_word(view, s: Region, inclusive: bool, count: int) -> Region:
