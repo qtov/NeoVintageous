@@ -193,6 +193,14 @@ def ex_buffers(window, **kwargs) -> None:
     output.show()
 
 
+def _expand_to_realpath(path: str) -> str:
+    expanded_user = os.path.expanduser(path)
+    expanded_vars = os.path.expandvars(expanded_user)
+
+    return os.path.realpath(expanded_vars)
+
+
+@_init_cwd
 def ex_cd(view, path=None, **kwargs) -> None:
     if not path:
         path = os.path.expanduser('~')
@@ -201,7 +209,7 @@ def ex_cd(view, path=None, **kwargs) -> None:
         if fname:
             path = os.path.dirname(fname)
     else:
-        path = os.path.realpath(os.path.expandvars(os.path.expanduser(path)))
+        path = _expand_to_realpath(path)
 
     if not os.path.isdir(path):
         return status_message("E344: Can't find directory \"%s\" in cdpath" % path)
@@ -403,6 +411,18 @@ def ex_global(window, view, pattern: str, line_range: RangeNode, cmd='print', **
 
     matches = [view.full_line(r.begin()) for r in matches]
     matches = [[r.a, r.b] for r in matches]
+
+    # Handle `:g!`/`:global!`
+    # The `!` is translated into `kwargs['forceit'] == True` and means we should
+    # pick all lines _not_ matching the pattern.
+    if kwargs.get('forceit', False):
+        inv_pos = region.a
+        new_matches = []
+        for a, b in matches:
+            new_matches.append([inv_pos, a])
+            inv_pos = b
+        new_matches.append([inv_pos, region.b])
+        matches = new_matches
 
     cmd.params['global_lines'] = matches
 
